@@ -56,5 +56,6 @@ export const deleteMovieByIdService = async (id) => {
 
 export const addNewMovieService = async (body) => {
   const newMovie = await movieModel.create(body);
+  console.log("newMovie: ", newMovie);
   return newMovie;
 };

@@ -8,7 +8,7 @@ const MovieSchema = new Schema({
   cast: [String],
   num_mflix_comments: Number,
   title: String,
-  fullplot: Number,
+  fullplot: String,
   countries: [String],
   released: Date,
   directors: [String],
