@@ -51,6 +51,8 @@ const AddMovie = () => {
               <Grid xs={12} sm={6} item>
                 <TextField
                   label="Wins"
+                  type="number"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   placeholder="Enter number of prizes won"
                   variant="outlined"
                   fullWidth
@@ -60,6 +62,8 @@ const AddMovie = () => {
               <Grid xs={12} sm={6} item>
                 <TextField
                   label="Nominations"
+                  type="number"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   placeholder="Enter the number of nominations"
                   variant="outlined"
                   fullWidth
