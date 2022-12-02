@@ -14,9 +14,6 @@ import connectDb from "./database/MongoDbConfig.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
-//Choosen architekture: 3 layer architecture
-//Router -> Controller -> Service Layer -> Data Access Layer
-
 //To load env variables into the process global object
 dotenv.config();
 
@@ -36,18 +33,16 @@ connectDb()
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use("/api/Movies", movieRoutes);
 
 let refreshTokens = [];
 
 app.post("/refreshToken", (req, res) => {
-  const refreshToken = req.body.refreshToken;
+  const { refreshToken } = req.body;
   if (refreshToken == null) return res.sendStatus(401);
   if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
-    const accessToken = generateAccessToken({ email: user.email });
-    res.json({ accessToken });
+    res.json({ accessToken: generateAccessToken({ email: user.email }) });
   });
 });
 
@@ -69,5 +64,5 @@ app.delete("/logout", (req, res) => {
 });
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1m" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
 }
