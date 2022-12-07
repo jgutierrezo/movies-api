@@ -14,7 +14,7 @@ import connectDb from "./database/MongoDbConfig.js";
 import dotenv from "dotenv";
 
 //Choosen architekture: 3 layer architecture
-//Router -> Controller -> Service Layer -> Data Access Layer
+//Router -> Controller -> Service Layer (Data Access Layer)
 
 //To load env variables into the process global object
 dotenv.config();
