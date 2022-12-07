@@ -9,10 +9,10 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import movieRoutes from "./routes/movieRoutes.js";
 import connectDb from "./database/MongoDbConfig.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import rTokenModel from "./database/models/rToken.js";
 
 //To load env variables into the process global object
 dotenv.config();
@@ -32,37 +32,50 @@ connectDb()
 //Configure server
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-let refreshTokens = [];
-
-app.post("/refreshToken", (req, res) => {
+app.post("/newAccessToken", async (req, res) => {
   const { refreshToken } = req.body;
-  if (refreshToken == null) return res.sendStatus(401);
-  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  if (refreshToken == null)
+    return res.status(401).send("Forbidden action. You need a refresh token");
+  if (!(await rTokenModel.findOne({ refreshToken })))
+    return res.status(403).send("Your refresh token is no longer valid");
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    res.json({ accessToken: generateAccessToken({ email: user.email }) });
+    if (err)
+      return res.status(403).send("Valid JWT token, but forbidden action");
+    res
+      .status(200)
+      .json({ accessToken: getAccessToken({ email: user.email }) });
   });
 });
 
-app.post("/login", (req, res) => {
+app.post("/getTokens", async (req, res) => {
   //Authenticate user
 
-  const user = { email: req.body.email };
-  const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-  refreshTokens.push(refreshToken);
-  res.json({ accessToken, refreshToken });
+  const userInfo = { email: req.body.email };
+
+  if (!userInfo.email)
+    return res.status(400).send("Request must have email parameter");
+
+  const aToken = getAccessToken(userInfo);
+  const rToken = jwt.sign(userInfo, process.env.REFRESH_TOKEN_SECRET);
+  await rTokenModel.create({ refreshToken: rToken });
+  res.json({ accessToken: aToken, refreshToken: rToken });
 });
 
-app.delete("/logout", (req, res) => {
+app.delete("/deleteRefreshToken", async (req, res) => {
   //Delete refresh token
-
-  refreshTokens.filter((t) => t !== req.body.refreshToken);
-  res.sendStatus(204);
+  await rTokenModel
+    .deleteOne({
+      refreshToken: req.body.refreshToken,
+    })
+    .then(function (data) {
+      console.log(data);
+      res.status(204).send("Refresh token successfully deleted");
+    });
 });
 
-function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "7d" });
+function getAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.EXPIRES_IN,
+  });
 }
