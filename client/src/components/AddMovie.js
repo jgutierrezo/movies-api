@@ -38,7 +38,7 @@ const AddMovie = () => {
       headers: {
         "Content-Type": "application/json",
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImoxQGdtYWlsLmNvbSIsImlhdCI6MTY2OTk4NzAyMiwiZXhwIjoxNjcwNTkxODIyfQ.74Yx4GsJ_iabIgT2bqjvXtb9-DMRAisZDjLZNrm29k0",
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpqQGdtYWlsLmNvbSIsImlhdCI6MTY3MDUxNzE1NiwiZXhwIjoxNjcxMTIxOTU2fQ.Oz2Iteg_6ijljuPk3GFWu8yjSdG_BeTxcobJPYFhQU4",
       },
       body: JSON.stringify({
         title,
