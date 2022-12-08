@@ -1,8 +1,7 @@
 import movieModel from "../database/models/movie.js";
 
 export const getMoviesService = async (page, perPage, title) => {
-  let startIndex = (page - 1) * perPage;
-  const endIndex = page * perPage;
+  const startIndex = (page - 1) * perPage;
   const totalMovies = await movieModel
     .countDocuments({ title: { $regex: title, $options: "i" } })
     .exec();
@@ -23,8 +22,8 @@ export const getMoviesService = async (page, perPage, title) => {
       sort: { _id: -1 },
     })
     .skip(startIndex)
-    .limit(endIndex);
-
+    .limit(perPage);
+  console.log("Total:", result.data.length);
   return result;
 };
 
