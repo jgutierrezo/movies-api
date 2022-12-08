@@ -10,6 +10,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const getMovies = async (req, res) => {
+  console.log("getMovies: ");
+
   try {
     res
       .status(200)

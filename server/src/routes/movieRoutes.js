@@ -9,15 +9,15 @@ import {
 import jwt from "jsonwebtoken";
 const router = express.Router();
 
-router.post("/", authenticateToken, addNewMovie);
+router.post("/", addNewMovie);
 
 router.get("/", getMovies);
 
 router.get("/:id", getMovie);
 
-router.put("/:id", authenticateToken, updateMovieById);
+router.put("/:id", updateMovieById);
 
-router.delete("/:id", authenticateToken, deleteMovieById);
+router.delete("/:id", deleteMovieById);
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
